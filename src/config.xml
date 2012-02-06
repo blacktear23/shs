@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<bean class="org.lyl.simplehttpserver.core.ServerContainer" id="ServerContainer">
+		<property name="servers">
+			<list>
+				<ref bean="SocketServer" />
+				<!-- <ref bean="SSLSocketServer" /> -->
+				<ref bean="DHCPServer" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="SSLSocketServer" class="org.lyl.simplehttpserver.services.SSLSocketServer">
+		<property name="port" value="443"/>
+		<property name="keyCertFile" value="" />
+		<property name="keyKeyPasswd" value="" />
+		<property name="keyStorePasswd" value="" />
+		<property name="trustCertFile" value="" />
+		<property name="trustStorePasswd" value="" />
+		<property name="connectionServiceName" value="HttpConnectionService" />
+	</bean>
+	
+	<bean id="SocketServer" class="org.lyl.simplehttpserver.services.SocketServer">
+		<property name="port" value="8008" />
+		<property name="connectionServiceName" value="HttpConnectionService" />
+	</bean>
+	
+	<bean id="DHCPServer" class="org.lyl.simplehttpserver.services.DatagramSocketServer">
+		<property name="port" value="67" />
+		<property name="bufferSize" value="1500" />
+		<property name="datagramPacketServiceName" value="DHCPService" />
+	</bean>
+	
+	<bean id="DHCPService" class="org.lyl.simplehttpserver.dhcp.DHCPService" scope="prototype">
+		<property name="processor" ref="DHCPProcessor" />
+	</bean>
+	
+	<bean id="DHCPProcessor" class="org.lyl.simplehttpserver.dhcp.DHCPProcessor">
+		<constructor-arg index="0" ref="ResourcePool1" />
+	</bean>
+	
+	<bean id="ResourcePool" class="org.lyl.simplehttpserver.dhcp.resourcepool.SingleResourcePool">
+		<property name="ip" value="192.168.1.110" />
+		<property name="mask" value="255.255.255.0" />
+		<property name="gateway" value="192.168.1.1" />
+		<property name="dns" value="8.8.8.8" />
+		<property name="leaseTime" value="3600" />
+	</bean>
+	
+	<bean id="ResourcePool1" class="org.lyl.simplehttpserver.dhcp.resourcepool.RangeResourcePool">
+		<property name="startIP" value="192.168.1.130" />
+		<property name="endIP" value="192.168.1.140" />
+		<property name="mask" value="255.255.255.0" />
+		<property name="gateway" value="192.168.1.1" />
+		<property name="dns" value="8.8.8.8" />
+		<property name="leaseTime" value="3600" />
+	</bean>
+		
+	<bean id="HttpConnectionService" class="org.lyl.simplehttpserver.services.HttpConnectionService" scope="prototype">
+		<property name="serverName" value="Simple Http Server" />
+		<property name="enableKeepAlive" value="true" />
+		<property name="keepAliveTimeout" value="15" />
+		<property name="expiresTime" value="20" />
+		<property name="maxKeepAlive" value="50" />
+		<property name="filter" ref="HttpProcessorFilter" />
+		<property name="encoding" value="UTF-8" />
+	</bean>
+	
+	<bean id="HttpProcessorFilter" class="org.lyl.simplehttpserver.core.RequestFilter">
+		<property name="filterItems">
+			<list>
+				<bean class="org.lyl.simplehttpserver.core.FilterItem">
+					<property name="key" value=".*?\.jscript" />
+					<property name="processorBeanName" value="JScriptRequestProcessor"/>
+				</bean>
+				<bean class="org.lyl.simplehttpserver.core.FilterItem">
+					<property name="key" value=".*" />
+					<property name="processorBeanName" value="HttpRequestProcessor" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+		
+	<bean id="HttpRequestProcessor" class="org.lyl.simplehttpserver.processor.HttpRequestProcessor" scope="prototype">
+		<property name="documentPath" value="/Users/mac/Downloads" />
+		<property name="bufferSize" value="1048576" />
+	</bean>
+	
+	<bean id="JScriptRequestProcessor" class="org.lyl.simplehttpserver.processor.JScriptProcessor" scope="prototype">
+		<property name="documentPath" value="/Users/mac/Downloads" />
+	</bean>
+</beans>

@@ -1,0 +1,3 @@
+#!/bin/sh
+MAIN=org.lyl.simplehttpserver.Launcher
+java -cp "$PWD/lib/*" $MAIN
