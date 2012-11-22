@@ -94,6 +94,9 @@ public class Response {
 		case 200:
 			res = "HTTP/" + http_version + " 200 OK\r\n";
 			break;
+		case 401:
+			res = "HTTP/" + http_version + " 401 Unauthorized\r\n";
+			break;
 		case 404:
 			res = "HTTP/" + http_version + " 404 Not Found\r\n";
 			break;
