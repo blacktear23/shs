@@ -87,6 +87,9 @@
 	<bean id="HttpRequestProcessor" class="org.lyl.simplehttpserver.processor.HttpRequestProcessor" scope="prototype">
 		<property name="documentPath" value="/Users/mac/Downloads" />
 		<property name="bufferSize" value="1048576" />
+		<property name="enableHttpBasicAuth" value="true" />
+		<property name="username" value="username" />
+		<property name="password" value="password" />
 	</bean>
 	
 	<bean id="JScriptRequestProcessor" class="org.lyl.simplehttpserver.processor.JScriptProcessor" scope="prototype">

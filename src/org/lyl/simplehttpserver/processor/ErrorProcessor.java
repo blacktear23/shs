@@ -21,6 +21,7 @@ public class ErrorProcessor extends AbstractFileProcessor {
 	private void _processError(Request req, Response resp) throws IOException {
 		PrintWriter writer = resp.getPrintWriter();
 		int code = resp.getStatuCode();
+		resp.setHeader("Content-Type", "text/html; charset=" + resp.getEncoding());
 		if(code == 403) {
 			String html = "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n<html><head>\n<meta http-equiv=\"content-type\" content=\"text/html; charset=" + resp.getEncoding() + "\"><title>403 Forbidden</title>\n</head><body>\n<h1>Forbidden</h1>\n</body></html>\n";
 			resp.setHeader("Content-Length", Integer.toString(html.getBytes(resp.getEncoding()).length));
