@@ -1,0 +1,67 @@
+<project basedir="." name="SimpleHttpServer" default="build">
+	<property name="dest.dir" value="build" />
+	<property name="dest.class.dir" value="${dest.dir}/class" />
+	<property name="src.dir" value="src" />
+	<property name="dest.jar" value="shserver.jar" />
+
+	<path id="libs.path">
+		<fileset dir="lib" includes="*.jar">
+		</fileset>
+	</path>
+
+	<target name="init">
+		<mkdir dir="${dest.dir}" />
+		<mkdir dir="${dest.class.dir}" />
+		<mkdir dir="${dest.dir}/lib" />
+		<mkdir dir="${dest.dir}/log" />
+	</target>
+
+	<target name="clean">
+		<delete dir="${dest.dir}" />
+	</target>
+
+	<target name="compile" depends="init">
+		<javac srcdir="${src.dir}" destdir="${dest.class.dir}" 
+			excludes="**/test/*.java" 
+			classpathref="libs.path"
+			debug="true">
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile">
+		<copy todir="${dest.class.dir}">
+			<fileset dir="${src.dir}">
+				<include name="**/*.properties"/>
+				<exclude name="config.properties" />
+				<exclude name="processors.properties" />
+			</fileset>
+		</copy>
+		<jar destfile="${dest.dir}/lib/${dest.jar}" basedir="${dest.class.dir}">
+			<include name="**/*.class" />
+			<include name="**/*.jar" />
+			<include name="**/*.properties" />
+			<manifest>
+				<attribute name="Main-Class" value="org.lyl.simplehttpserver.Luncher" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="build" depends="jar">
+		<copy todir="${dest.dir}/lib">
+			<fileset dir="lib" />
+		</copy>
+		<copy todir="${dest.dir}">
+			<fileset dir="src" includes="run.bat" />
+			<fileset dir="src" includes="run" />
+			<fileset dir="src" includes="config.properties, processors.properties" />
+			<fileset dir="src" includes="config.xml" />
+		</copy>
+	</target>
+
+	<target name="rebuild">
+		<antcall target="clean">
+		</antcall>
+		<antcall target="build">
+		</antcall>
+	</target>
+</project>
